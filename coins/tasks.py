@@ -1,5 +1,7 @@
 import requests
+from asgiref.sync import async_to_sync
 from celery import shared_task
+from channels.layers import get_channel_layer
 from django.forms.models import model_to_dict
 from django.conf import settings
 from enum import Enum
@@ -12,6 +14,7 @@ class PriceState(Enum):
     SAME = 'same'
     RAISE = 'raise'
 
+channel_layer = get_channel_layer()
 
 @shared_task
 def get_coins_data():
@@ -50,3 +53,5 @@ def get_coins_data():
         )
 
         coins.append(new_data)
+
+    async_to_sync(channel_layer.group_send)('coins', {'type': 'send_new_data', 'text': coins})
