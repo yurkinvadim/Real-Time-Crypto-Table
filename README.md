@@ -1,6 +1,6 @@
 # Django Channels + React + Celery + Redis: Real-Time Table (CoinMarketCap Clone)  
 
-Educational project based on [this video](https://youtu.be/wos1uhnd3qM).  
+Educational project built to practice real-time data updates.
 
 This project is a real-time cryptocurrency prices table (CoinMarketCap clone) built with **Django Channels**, **Celery**, **Redis**, and **React**.  
 It performs periodic data fetching from the **CoinGecko API** every 30 seconds and broadcasts updates to all connected clients via **WebSockets**.
