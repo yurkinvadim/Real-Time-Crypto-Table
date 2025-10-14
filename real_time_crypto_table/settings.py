@@ -62,6 +62,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'real_time_crypto_table.wsgi.application'
 
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379')
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
