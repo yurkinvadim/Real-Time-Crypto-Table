@@ -14,5 +14,4 @@ def index(request):
         }
     ).json()
 
-    # coins = requests.get(url).json()
     return render(request, 'index.html', context={'coins': coins})
