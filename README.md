@@ -1,4 +1,4 @@
-# Django Channels + React + Celery + Redis: Real-Time Table Crypto Table
+# Django Channels + React + Celery + Redis: Real-Time Crypto Table 
 
 Educational project built to practice real-time data updates.
 
