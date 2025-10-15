@@ -9,5 +9,5 @@ It performs periodic data fetching from the **CoinGecko API** every 10 seconds a
 - **Frontend:** React  
 - **Data:** CoinGecko API, updated every 10 seconds via WebSockets  
 
-![screenshot](static/picture.png)
+![screenshot](static/pic.png)
 
