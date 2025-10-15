@@ -3,7 +3,7 @@ version: "3.9"
 services:
   web:
     build: .
-    command: sh -c "python manage.py collectstatic --noinput && daphne -b 0.0.0.0 -p 8000 real_time_crypto_table.asgi:application"
+    command: sh -c "python wait_for_db.py && python manage.py migrate && python manage.py collectstatic --noinput && daphne -b 0.0.0.0 -p 8000 real_time_crypto_table.asgi:application"
     volumes:
       - static_volume:/app/staticfiles
     ports:
@@ -12,16 +12,18 @@ services:
       - .env
     depends_on:
       - redis
+      - db
 
   celery:
     build: .
-    command: celery -A real_time_crypto_table worker --loglevel=info
+    command: sh -c "python wait_for_db.py && celery -A real_time_crypto_table worker --loglevel=info"
     volumes:
       - .:/app
     env_file:
       - .env
     depends_on:
       - redis
+      - db
 
   celery-beat:
     build: .
@@ -32,11 +34,25 @@ services:
       - .env
     depends_on:
       - redis
+      - db
 
   redis:
     image: redis:7
     ports:
-      - "6379:6379"
+      - "6380:6379"
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
 
 volumes:
   static_volume:
+  postgres_data:
