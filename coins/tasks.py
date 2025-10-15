@@ -4,15 +4,8 @@ from celery import shared_task
 from channels.layers import get_channel_layer
 from django.forms.models import model_to_dict
 from django.conf import settings
-from enum import Enum
-
 from .models import Coin
 
-
-class PriceState(Enum):
-    FALL = 'fall'
-    SAME = 'same'
-    RAISE = 'raise'
 
 channel_layer = get_channel_layer()
 
@@ -34,12 +27,12 @@ def get_coins_data():
         coin_obj.name = coin['name']
         coin_obj.symbol = coin['symbol']
 
-        state = PriceState.SAME
+        state = 'same'
 
         if coin_obj.price > coin['current_price']:
-            state = PriceState.FALL
+            state = 'fall'
         elif coin_obj.price < coin['current_price']:
-            state = PriceState.RAISE
+            state = 'raise'
 
         coin_obj.price = coin['current_price']
         coin_obj.rank = coin['market_cap_rank']

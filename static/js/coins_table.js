@@ -1,35 +1,44 @@
-function CoinsTable() {
-  const [coins, setCoins] = React.useState([]);      // <-- React.useState
-  React.useEffect(() => {                             // <-- React.useEffect
-    const socket = new WebSocket("ws://127.0.0.1:8000/ws/coins/");
-
-    socket.onopen = () => {
-      console.log("Connected to Coins WebSocket");
-    };
+function CoinsTable({initialCoins}) {
+  const [coins, setCoins] = React.useState(initialCoins || []);
+  React.useEffect(() => {
+    const socket = new WebSocket(`ws://${window.location.host}/ws/coins/`);
 
     socket.onmessage = (event) => {
-      try {
         const data = JSON.parse(event.data);
-        setCoins((prev) => [...prev, data]);
-      } catch (err) {
-        console.error("Invalid JSON:", event.data);
-      }
+        setCoins(data);
     };
 
-    socket.onclose = () => console.log("Coins WebSocket closed");
     socket.onerror = (err) => console.error("WebSocket error:", err);
 
     return () => socket.close();
   }, []);
 
   return (
-    <div>
-      <h3>Coins Data</h3>
-      <ul>
-        {coins.map((c, i) => (
-          <li key={i}>{JSON.stringify(c)}</li>
-        ))}
-      </ul>
-    </div>
+  <>
+      <table className="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {coins.map((coin, i) => (
+            <tr key={i}>
+              <td>{coin.rank}</td>
+              <td>
+                <img src={coin.image} alt="" className="px-2" width="50" />
+                {coin.name}
+                <small className="text-muted px-2">{coin.symbol}</small>
+              </td>
+              <td style={{ color: coin.state === 'raise' ? 'limegreen' : coin.state === 'fall' ? 'red' : 'inherit' }}>
+                {coin.price}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
