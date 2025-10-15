@@ -11,3 +11,9 @@ It performs periodic data fetching from the **CoinGecko API** every 10 seconds a
 
 ![screenshot](static/pic.png)
 
+## Running the Project
+
+Build and start the containers:
+
+```bash
+docker compose up --build
