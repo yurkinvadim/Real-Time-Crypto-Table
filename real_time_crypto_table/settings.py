@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@@&6+k5j@nfs8$uq5$oyelf&@(rekh*p&y(o*t))-bg7ufm+9&'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-@@&6+k5j@nfs8$uq5$oyelf&@(rekh*p&y(o*t))-bg7ufm+9&')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -65,7 +66,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'real_time_crypto_table.wsgi.application'
 ASGI_APPLICATION = 'real_time_crypto_table.asgi.application'
 
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379')
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -81,8 +82,9 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            'hosts': [('127.0.0.1', 6379)]
-        }
+            "hosts": [(os.getenv("CHANNEL_LAYERS_REDIS_HOST", "redis"),
+                       int(os.getenv("CHANNEL_LAYERS_REDIS_PORT", 6379)))],
+        },
     }
 }
 
@@ -121,10 +123,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR.joinpath('static')
 ]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
